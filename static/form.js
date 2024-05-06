@@ -1,5 +1,6 @@
 const $form = document.querySelector(".Cupcake-form");
-const $cupcake_ul = document.querySelector(".Cupcake-list");
+const $cupcakeUl = document.querySelector(".Cupcake-list");
+const $addCupcake = document.querySelector(".Add-cupcake");
 
 // TODO: add bootstrap to li
 const LI_BOOTSTRAP = "list-group-item d-flex justify-content-between align-items-center";
@@ -7,6 +8,7 @@ const LI_BOOTSTRAP = "list-group-item d-flex justify-content-between align-items
 /**
  * Append all cupcakes from API to the cupcake list
  *
+ * Adding only information about flavor, size, and rating with an img.
  */
 async function display_cupcakes() {
   const resp = await fetch('/api/cupcakes');
@@ -21,7 +23,11 @@ async function display_cupcakes() {
 
     // $li.classList.add(LI_BOOTSTRAP)
 
-    const attributes = {flavor: cupcake.flavor, size: cupcake.size, rating: cupcake.rating}
+    const attributes = {
+      flavor: cupcake.flavor,
+      size: cupcake.size,
+      rating: cupcake.rating
+    };
 
     for (const prop in attributes) {
 
@@ -37,8 +43,17 @@ async function display_cupcakes() {
     $li.append($img);
     $li.append($span);
 
-    $cupcake_ul.append($li);
+    $cupcakeUl.append($li);
   }
+}
+
+$addCupcake.addEventListener("click");
+
+/**
+ * Add information from cupcake form to the database
+ */
+function handle_adding_cupcake() {
+
 }
 
 /**
