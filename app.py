@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 # from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, dbx, Cupcake
@@ -26,6 +26,20 @@ app.config['SECRET_KEY'] = os.environ.get(
 
 # debug = DebugToolbarExtension(app)
 
+################################################################################
+# HOME
+
+#TODO: how would I use url_for here? what is the benefit?
+@app.get("/")
+def root():
+    """ Display homepage """
+
+    return render_template("home.jinja")
+
+
+################################################################################
+# CUPCAKES DATA
+
 @app.get("/api/cupcakes")
 def get_cupcakes_data():
     """ Get all cupcakes data and return JSON
@@ -38,6 +52,8 @@ def get_cupcakes_data():
 
     return jsonify(cupcakes=serialized)
 
+###############
+# ALL
 @app.get("/api/cupcakes/<int:cc_id>")
 def get_cupcake_data(cc_id):
     """ Get cupcake data and return JSON
@@ -48,12 +64,16 @@ def get_cupcake_data(cc_id):
 
     return jsonify(cupcake=serialized)
 
+################################################################################
+# CREATE CUPCAKE
+
 @app.post("/api/cupcakes")
 def create_cupcake():
     """ Create a cupcake.
     Pass in to the body {id, flavor, size, rating, image_url}
-    Everything is required except the image_url which is optional.
-    Pass "image_url": null and image_url will be set to the default image.
+    All keys are required but the image_url can be set to null.
+
+    Pass "image_url": null and ima{ge_url will be set to the default image.
 
     Return JSON {cupcake: {id, flavor, size, rating, image_url}}.
     """
@@ -113,7 +133,7 @@ def update_cupcake(cc_id):
 def delete_cupcake(cc_id):
     """ Delete cupcake data from DB
 
-    Return JSON of deleted cupcake {deleted: [cupcake-id]}
+    Return JSON of deleted cupcake {deleted: <cupcake-id>}
     """
 
     cupcake = db.get_or_404(Cupcake, cc_id)
@@ -121,6 +141,6 @@ def delete_cupcake(cc_id):
     db.session.delete(cupcake)
     db.session.commit()
 
-    return jsonify({"deleted": cc_id})
+    return jsonify(deleted=cc_id)
 
 
