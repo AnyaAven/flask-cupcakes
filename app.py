@@ -15,7 +15,10 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['SQLALCHEMY_RECORD_QUERIES'] = True
 db.init_app(app)
 
-app.config['SECRET_KEY'] = "my_favorite_color_is_qjol" # TODO: can we walk ovr where our secret key goes again?
+app.config['SECRET_KEY'] = "my_favorite_color_is_qjol"
+app.config['SECRET_KEY'] = os.environ.get(
+    'SECRET_KEY', "my_favorite_color_is_qjol")
+
 
 # Having the Debug Toolbar show redirects explicitly is often usefu#l;
 # however, if you want to turn it off, you can uncomment this line:
@@ -48,7 +51,9 @@ def get_cupcake_data(cc_id):
 @app.post("/api/cupcakes")
 def create_cupcake():
     """ Create a cupcake.
-    If no image_url is passed, the DB will use the default image.
+    Pass in to the body {id, flavor, size, rating, image_url}
+    Everything is required except the image_url which is optional.
+    Pass "image_url": null and image_url will be set to the default image.
 
     Return JSON {cupcake: {id, flavor, size, rating, image_url}}.
     """
@@ -56,14 +61,14 @@ def create_cupcake():
     flavor = request.json["flavor"]
     size = request.json["size"]
     rating = request.json["rating"]
-    image_url = request.json.get("image_url")
+    image_url = request.json["image_url"]
 
     new_cupcake = Cupcake(
         flavor=flavor,
         size=size,
         rating=rating,
         image_url=image_url
-        )
+    )
 
     db.session.add(new_cupcake)
     db.session.commit()
@@ -71,3 +76,51 @@ def create_cupcake():
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
+
+
+################################################################################
+# UPDATE AND DELETE CUPCAKES
+
+@app.patch("/api/cupcakes/<int:cc_id>")
+def update_cupcake(cc_id):
+    """ Update cupcake data
+    Pass in to the body {id, flavor, size, rating, image_url}
+    Everything is optional.
+    The properties will remain the same if no value is sent in the body.
+
+    Return JSON of newly updated cupcake
+       {cupcake: {id, flavor, size, rating, image_url}}
+    """
+
+    cupcake = db.get_or_404(Cupcake, cc_id)
+
+    # Gather updated data sent or default to current data of the cupcake
+    # Then update cupcake
+    cupcake.flavor = request.json.get("flavor", cupcake.flavor)
+    cupcake.size = request.json.get("size", cupcake.size)
+    cupcake.rating = request.json.get("rating", cupcake.rating)
+    cupcake.image_url = request.json.get("image_url", cupcake.image_url)
+
+    db.session.add(cupcake)
+    db.session.commit()
+
+    serialized = cupcake.serialize()
+
+    return jsonify(cupcake=serialized)
+
+
+@app.delete("/api/cupcakes/<int:cc_id>")
+def delete_cupcake(cc_id):
+    """ Delete cupcake data from DB
+
+    Return JSON of deleted cupcake {deleted: [cupcake-id]}
+    """
+
+    cupcake = db.get_or_404(Cupcake, cc_id)
+
+    db.session.delete(cupcake)
+    db.session.commit()
+
+    return jsonify({"deleted": cc_id})
+
+
