@@ -5,18 +5,27 @@ const $addCupcake = document.querySelector(".Add-cupcake");
 // TODO: add bootstrap to li
 const LI_BOOTSTRAP = "list-group-item d-flex justify-content-between align-items-center";
 
+
+/**
+ * Get all cupcakes data from the API
+*/
+async function getCupcakes(){
+  const resp = await fetch('/api/cupcakes');
+  const data = await resp.json();
+
+  console.log("cupcakes data", data.cupcakes);
+  return data.cupcakes
+}
+
 /**
  * Append all cupcakes from API to the cupcake list
  *
  * Adding only information about flavor, size, and rating with an img.
  */
-async function display_cupcakes() {
-  const resp = await fetch('/api/cupcakes');
-  const cupcakes = await resp.json();
+async function displayCupcakes() {
+  const cupcakes = await getCupcakes()
 
-  console.log({ cupcakes });
-
-  for (const cupcake of cupcakes["cupcakes"]) {
+  for (const cupcake of cupcakes) {
     const $li = document.createElement("li");
     const $span = document.createElement("span");
     const $img = document.createElement("img");
@@ -39,6 +48,8 @@ async function display_cupcakes() {
 
     $img.src = cupcake.image_url;
     $img.alt = "Cupcake image";
+    $img.width = "200"
+    $img.height = "200"
 
     $li.append($img);
     $li.append($span);
@@ -47,20 +58,26 @@ async function display_cupcakes() {
   }
 }
 
-$addCupcake.addEventListener("click");
+// $addCupcake.addEventListener("click");
 
 /**
- * Add information from cupcake form to the database
+ * Add information from cupcake form to the API
  */
-function handle_adding_cupcake() {
-
+function addCupcakeToAPI() {
+  const response = await fetch(`/api/score-word`, {
+    method: "POST",
+    body: JSON.stringify({ word, gameId }),
+    headers: {
+      "content-type": "application/json",
+    },
+  });
 }
 
 /**
  * Start the form
  */
 function start() {
-  display_cupcakes();
+  displayCupcakes();
 }
 
 export { start };
