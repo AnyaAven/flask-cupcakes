@@ -46,6 +46,11 @@ CUPCAKE_DATA_2 = {
     "image_url": "http://test.com/cupcake2.jpg"
 }
 
+PATCH_DATA_1 = {
+    "flavor": "Salty",
+    "size": "itty-bitty",
+}
+
 
 class CupcakeViewsTestCase(TestCase):
     """Tests for views of API."""
@@ -105,6 +110,13 @@ class CupcakeViewsTestCase(TestCase):
     def test_create_cupcake(self):
         with app.test_client() as client:
             url = "/api/cupcakes"
+
+            # Modified this code here.
+            # Test to make sure we have only 1 cupcake in the DB
+            q = db.select(Cupcake)
+            self.assertEqual(len(dbx(q).scalars().all()), 1)
+
+            # Create a cupcake
             resp = client.post(url, json=CUPCAKE_DATA_2)
 
             self.assertEqual(resp.status_code, 201)
@@ -124,5 +136,45 @@ class CupcakeViewsTestCase(TestCase):
                 }
             })
 
-            q = db.select(Cupcake)
+            # Test to make sure we have only 2 cupcakes in the DB
+            q = db.select(Cupcake) # TODO: can I get rid of this code now?
             self.assertEqual(len(dbx(q).scalars().all()), 2)
+
+    def test_update_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            # Update cupcake
+            resp = client.patch(url, json=PATCH_DATA_1)
+
+            self.assertEqual(resp.status_code, 200)
+
+            cupcake_id = resp.json['cupcake']['id']
+
+            # don't know what ID we'll get, make sure it's an int
+            self.assertIsInstance(cupcake_id, int)
+
+            data = resp.json
+            self.assertEqual(data, {
+                "cupcake": {
+                    "id": self.cupcake_id,
+                    "flavor": "Salty",
+                    "size": "itty-bitty",
+                    "rating": 5,
+                    "image_url": "http://test.com/cupcake.jpg"
+                }
+            })
+
+
+
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            # Delete cupcake
+            resp = client.delete(url)
+
+            self.assertEqual(resp.status_code, 200)
+
+            # Test to make sure we have 0 cupcakes in the DB
+            q = db.select(Cupcake)
+            self.assertEqual(len(dbx(q).scalars().all()), 0)
+
