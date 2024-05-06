@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['SQLALCHEMY_RECORD_QUERIES'] = True
 db.init_app(app)
 
-app.config['SECRET_KEY'] = "my_favorite_color_is_qjol"
+app.config['SECRET_KEY'] = "my_favorite_color_is_qjol" # TODO: can we walk ovr where our secret key goes again?
 
 # Having the Debug Toolbar show redirects explicitly is often usefu#l;
 # however, if you want to turn it off, you can uncomment this line:
@@ -48,6 +48,8 @@ def get_cupcake_data(cc_id):
 @app.post("/api/cupcakes")
 def create_cupcake():
     """ Create a cupcake.
+    If no image_url is passed, the DB will use the default image.
+
     Return JSON {cupcake: {id, flavor, size, rating, image_url}}.
     """
 
