@@ -142,6 +142,10 @@ class CupcakeViewsTestCase(TestCase):
             self.assertEqual(len(dbx(q).scalars().all()), 2)
 
     def test_update_cupcake(self):
+        # Get the cupcake by id to test
+        cupcake_test = db.session.get(Cupcake, self.cupcake_id)
+        self.assertEqual(cupcake_test.flavor, "TestFlavor")
+
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake_id}"
             # Update cupcake
@@ -165,9 +169,14 @@ class CupcakeViewsTestCase(TestCase):
                 }
             })
 
+            self.assertEqual(cupcake_test.flavor, "Salty")
 
 
     def test_delete_cupcake(self):
+        # FIXME: add a before and after tango
+        q = db.select(Cupcake)
+        self.assertEqual(dbx(q).scalar_one().flavor, "TestFlavor")
+
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake_id}"
             # Delete cupcake
