@@ -20,12 +20,12 @@ class Cupcake(db.Model):
 
     flavor = db.mapped_column(
         db.String(50),
-        nullable=False
+        nullable=False # make unique
     )
 
     size = db.mapped_column(
         db.String(15),
-        nullable=False
+        nullable=False,
     )
 
     rating = db.mapped_column(
