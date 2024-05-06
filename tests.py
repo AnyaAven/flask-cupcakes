@@ -112,7 +112,7 @@ class CupcakeViewsTestCase(TestCase):
             cupcake_id = resp.json['cupcake']['id']
 
             # don't know what ID we'll get, make sure it's an int
-            self.assertIsInstance(cupcake_id, int)
+            self.assertIsInstance(cupcake_id, int) # TODO: question, what do you meam we don't know? Didn't say it needed to be an int in our db?
 
             self.assertEqual(resp.json, {
                 "cupcake": {
