@@ -20,7 +20,11 @@ async function getCupcakes(){
 /**
  * Append all cupcakes from API to the cupcake list
  *
- * Adding only information about flavor, size, and rating with an img.
+ * Each cupcake is in a <span> inside of a <li>
+ * with information about flavor, size, and rating in <p>'s
+ * and an <img>.
+ *
+ * <img> 200 x 200
  */
 async function displayCupcakes() {
   const cupcakes = await getCupcakes()
@@ -48,8 +52,8 @@ async function displayCupcakes() {
 
     $img.src = cupcake.image_url;
     $img.alt = "Cupcake image";
-    $img.width = "200"
-    $img.height = "200"
+    $img.width = "200";
+    $img.height = "200";
 
     $li.append($img);
     $li.append($span);
@@ -62,17 +66,18 @@ $addCupcake.addEventListener("click", addCupcakeToAPI);
 
 /**
  * Add information from cupcake form to the API
+ *
+ * If nothing is provided for the image_url in the form,
+ * the api will have a default image url
  */
 async function addCupcakeToAPI(evt) {
-  evt.preventDefault()
 
-  const cupcake = {}
+  const cupcake = {};
   for (const [attr, form_data] of new FormData($form)){
     cupcake[attr] = form_data;
   }
   // if image is '', make it null,
   if(cupcake.image_url === '') cupcake.image_url = null;
-
 
   console.log("cupcake to add", cupcake);
   const response = await fetch(`/api/cupcakes`, {
@@ -83,11 +88,11 @@ async function addCupcakeToAPI(evt) {
     },
   });
 
-  return await response.json //TODO: DO I Need the await?
+  return response.json
 }
 
 /**
- * Start the form
+ * Start the home page
  */
 function start() {
   displayCupcakes();
