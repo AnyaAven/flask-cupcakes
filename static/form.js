@@ -58,19 +58,32 @@ async function displayCupcakes() {
   }
 }
 
-// $addCupcake.addEventListener("click");
+$addCupcake.addEventListener("click", addCupcakeToAPI);
 
 /**
  * Add information from cupcake form to the API
  */
-function addCupcakeToAPI() {
-  const response = await fetch(`/api/score-word`, {
+async function addCupcakeToAPI(evt) {
+  evt.preventDefault()
+
+  const cupcake = {}
+  for (const [attr, form_data] of new FormData($form)){
+    cupcake[attr] = form_data;
+  }
+  // if image is '', make it null,
+  if(cupcake.image_url === '') cupcake.image_url = null;
+
+
+  console.log("cupcake to add", cupcake);
+  const response = await fetch(`/api/cupcakes`, {
     method: "POST",
-    body: JSON.stringify({ word, gameId }),
+    body: JSON.stringify(cupcake),
     headers: {
       "content-type": "application/json",
     },
   });
+
+  return await response.json //TODO: DO I Need the await?
 }
 
 /**
