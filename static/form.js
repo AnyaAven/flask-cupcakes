@@ -8,6 +8,8 @@ const LI_BOOTSTRAP = "list-group-item d-flex justify-content-between align-items
 
 /**
  * Get all cupcakes data from the API
+ *
+ * TODO: show what the data looks like
 */
 async function getCupcakes(){
   const resp = await fetch('/api/cupcakes');
@@ -34,7 +36,7 @@ async function displayCupcakes() {
     const $span = document.createElement("span");
     const $img = document.createElement("img");
 
-    // $li.classList.add(LI_BOOTSTRAP)
+    // $li.classList.add(LI_BOOTSTRAP) make this work
 
     const attributes = {
       flavor: cupcake.flavor,
@@ -65,12 +67,19 @@ async function displayCupcakes() {
 $addCupcake.addEventListener("click", addCupcakeToAPI);
 
 /**
+ * FIXME: Break into 2 functions
+ * 1: Get the form data
+ * 2: Send to api
+ *
+ * 3: Create a function to append the saved cupcake to the page, clear out form
+ *
  * Add information from cupcake form to the API
  *
  * If nothing is provided for the image_url in the form,
  * the api will have a default image url
  */
 async function addCupcakeToAPI(evt) {
+  evt.preventDefault()
 
   const cupcake = {};
   for (const [attr, form_data] of new FormData($form)){
@@ -88,7 +97,7 @@ async function addCupcakeToAPI(evt) {
     },
   });
 
-  return response.json
+  // FIXME: return the cupcake data -> await response.json()
 }
 
 /**
