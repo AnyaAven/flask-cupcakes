@@ -3,6 +3,7 @@
 import os
 
 from flask import Flask, jsonify, request, render_template
+from sqlalchemy import desc
 # from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, dbx, Cupcake
@@ -46,7 +47,7 @@ def get_cupcakes_data():
     {cupcakes: [{id, flavor, size, rating, image_url}, ...]}.
     """
 
-    q = db.select(Cupcake).order_by(Cupcake.rating)
+    q = db.select(Cupcake).order_by(desc(Cupcake.rating))
     cupcakes = dbx(q).scalars().all()
     serialized = [c.serialize() for c in cupcakes]
 
